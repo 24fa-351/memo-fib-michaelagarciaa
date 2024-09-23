@@ -1,19 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>  // For uint64_t
-#include <limits.h>  // For UINT64_MAX
+#include <stdint.h>  
+#include <limits.h>  
 
-uint64_t fib_r(int n);  // Recursive Fibonacci
-uint64_t fib_i(int n);  // Iterative Fibonacci
+uint64_t fib_r(int n);  
+uint64_t fib_i(int n); 
 uint64_t (*fib_func)(int n);
 
 int main(int argc, char *argv[]) {
     int input_number = 0;
-    char method = 'r';  // Default to recursive
-    char *filename = "input.txt";  // Default file name
+    char method = 'r';  
+    char *filename = "input.txt";  
 
     if (argc >= 4) {
-        // If enough arguments are passed, use them
         input_number = atoi(argv[1]);
         method = argv[2][0];
         filename = argv[3];
@@ -31,7 +30,6 @@ int main(int argc, char *argv[]) {
 
     int n = input_number + file_number;
 
-    // Select function based on method
     if (method == 'r') {
         fib_func = fib_r;
     } else if (method == 'i') {
@@ -52,7 +50,6 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-// Recursive Fibonacci implementation without memoization
 uint64_t fib_r(int n) {
     if (n <= 1) {
         return n;
@@ -60,7 +57,6 @@ uint64_t fib_r(int n) {
     return fib_r(n - 1) + fib_r(n - 2);
 }
 
-// Iterative Fibonacci implementation without memoization
 uint64_t fib_i(int n) {
     if (n <= 1) {
         return n;
@@ -69,7 +65,7 @@ uint64_t fib_i(int n) {
     uint64_t first = 0, second = 1, next_number;
     for (int index = 2; index <= n; index++) {
         if (UINT64_MAX - second < first) {
-            return UINT64_MAX;  // Handle overflow case
+            return UINT64_MAX;  
         }
         next_number = first + second;
         first = second;
