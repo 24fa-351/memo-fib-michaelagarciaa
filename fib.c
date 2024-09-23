@@ -3,9 +3,12 @@
 #include <stdint.h>  
 #include <limits.h>  
 
-uint64_t fib_r(int n);  
-uint64_t fib_i(int n); 
+uint64_t fib_r(int n); 
+uint64_t fib_i(int n);  
 uint64_t (*fib_func)(int n);
+
+uint64_t *memo_r = NULL;  
+uint64_t *memo_i = NULL; 
 
 int main(int argc, char *argv[]) {
     int input_number = 0;
@@ -30,12 +33,27 @@ int main(int argc, char *argv[]) {
 
     int n = input_number + file_number;
 
+    memo_r = (uint64_t *)malloc((n + 1) * sizeof(uint64_t));
+    memo_i = (uint64_t *)malloc((n + 1) * sizeof(uint64_t));
+
+    if (memo_r == NULL || memo_i == NULL) {
+        printf("Error: Memory allocation failed.\n");
+        return 1;
+    }
+
+    for (int i = 0; i <= n; i++) {
+        memo_r[i] = UINT64_MAX;
+        memo_i[i] = UINT64_MAX;
+    }
+
     if (method == 'r') {
         fib_func = fib_r;
     } else if (method == 'i') {
         fib_func = fib_i;
     } else {
         printf("Error: Unknown method '%c'.\n", method);
+        free(memo_r);
+        free(memo_i);
         return 1;
     }
 
@@ -47,6 +65,9 @@ int main(int argc, char *argv[]) {
         printf("The %dth Fibonacci number is: %llu\n", n, fibonacci_result);
     }
 
+    free(memo_r);
+    free(memo_i);
+
     return 0;
 }
 
@@ -54,12 +75,22 @@ uint64_t fib_r(int n) {
     if (n <= 1) {
         return n;
     }
-    return fib_r(n - 1) + fib_r(n - 2);
+
+    if (memo_r[n] != UINT64_MAX) {
+        return memo_r[n];
+    }
+
+    memo_r[n] = fib_r(n - 1) + fib_r(n - 2);
+    return memo_r[n];
 }
 
 uint64_t fib_i(int n) {
     if (n <= 1) {
         return n;
+    }
+
+    if (memo_i[n] != UINT64_MAX) {
+        return memo_i[n];  
     }
 
     uint64_t first = 0, second = 1, next_number;
@@ -70,6 +101,7 @@ uint64_t fib_i(int n) {
         next_number = first + second;
         first = second;
         second = next_number;
+        memo_i[index] = second;  
     }
 
     return second;
